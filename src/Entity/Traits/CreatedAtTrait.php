@@ -3,8 +3,9 @@
 namespace App\Entity\Traits;
 
 use Symfony\Component\Validator\Constraints\DateTime;
+use Doctrine\ORM\Mapping;
 
-/*
+/**
  * @Mapping\HasLifecycleCallbacks
  */
 trait CreatedAtTrait
@@ -14,7 +15,7 @@ trait CreatedAtTrait
      *
      * @Mapping\Column(name="created_at", type="datetime", nullable=true)
      */
-    protected $createdAt;
+    protected DateTime $createdAt;
 
     public function getCreatedAt(): DateTime
     {
@@ -26,6 +27,6 @@ trait CreatedAtTrait
      */
     public function setCreatedAt(): void
     {
-       $this->creatidAt = new DateTime();
+       $this->createdAt = new DateTime();
     }
 }

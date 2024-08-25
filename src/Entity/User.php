@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping;
 /**
  * @Mapping\Table(name="`user`")
  * @Mapping\Entity(repositoryClass="App\Repository\UserRepository")
- * @Mapping\HasLifecycleCallbacks()
+ * @Mapping\HasLifecycleCallbacks
  */
 class User
 {
@@ -25,7 +25,6 @@ class User
     /**
      * @var string
      * @Mapping\Column(name="login", type="string", length=32, nullable=false, unique=true)
-     * @Mapping\
      */
     private $login;
 

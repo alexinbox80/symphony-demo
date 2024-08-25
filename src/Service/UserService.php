@@ -12,7 +12,7 @@ class UserService
     /**
      * @var EntityManagerInterface
      */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
@@ -27,5 +27,58 @@ class UserService
         $userRepository = $this->entityManager->getRepository(User::class);
 
         return $userRepository->getUsers($page, $perPage);
+    }
+
+    public function saveUser(string $login): ?int
+    {
+        $user = new User();
+        $user->setLogin($login);
+
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+
+        return $user->getId();
+    }
+
+    public function updateUser(int $userId, string $login): bool
+    {
+        /**
+         * @var UserRepository $userRepository
+         */
+        $userRepository = $this->entityManager->getRepository(User::class);
+
+        /**
+         * @var User $user
+         */
+
+        $user = $userRepository->find($userId);
+        if ($user === null)
+            return false;
+
+        $user->setLogin($login);
+        $this->entityManager->flush();
+
+        return true;
+    }
+
+    public function deleteUser(int $userId): bool
+    {
+        /**
+         * @var UserRepository $userRepository
+         */
+        $userRepository = $this->entityManager->getRepository(User::class);
+
+        /**
+         * @var User $user
+         */
+
+        $user = $userRepository->find($userId);
+        if ($user === null)
+            return false;
+
+        $this->entityManager->remove($user);
+        $this->entityManager->flush();
+
+        return true;
     }
 }
