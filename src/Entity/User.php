@@ -4,34 +4,30 @@ namespace App\Entity;
 
 use App\Entity\Traits\CreatedAtTrait;
 use App\Entity\Traits\UpdatedAtTrait;
-use Doctrine\ORM\Mapping;
+use App\Repository\UserRepository;
+use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @Mapping\Table(name="`user`")
- * @Mapping\Entity(repositoryClass="App\Repository\UserRepository")
- * @Mapping\HasLifecycleCallbacks
- */
+#[ORM\Entity(repositoryClass: UserRepository::class)]
 class User
 {
     use CreatedAtTrait, UpdatedAtTrait;
 
-    /**
-     * @Mapping\Id
-     * @Mapping\Column(name="id", type="bigint", unique=true)
-     * @Mapping\GeneratedValue(strategy="IDENTITY")
-     */
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private int $id;
 
-    /**
-     * @var string
-     * @Mapping\Column(name="login", type="string", length=32, nullable=false, unique=true)
-     */
-    private $login;
+    #[ORM\Column(
+        length: 32,
+        nullable: false,
+        unique: true
+    )]
+    private string $login;
 
     /**
      * @return mixed
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -39,16 +35,22 @@ class User
     /**
      * @param mixed $id
      */
-    public function setId($id): void
+    public function setId(int $id): void
     {
         $this->id = $id;
     }
 
+    /**
+     * @return string
+     */
     public function getLogin(): string
     {
         return $this->login;
     }
 
+    /**
+     * @param string $login
+     */
     public function setLogin(string $login): void
     {
         $this->login = $login;

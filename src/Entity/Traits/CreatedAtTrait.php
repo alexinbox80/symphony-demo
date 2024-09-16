@@ -3,7 +3,7 @@
 namespace App\Entity\Traits;
 
 use Symfony\Component\Validator\Constraints\DateTime;
-use Doctrine\ORM\Mapping;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @Mapping\HasLifecycleCallbacks
@@ -13,8 +13,12 @@ trait CreatedAtTrait
     /**
      * @var DateTime
      *
-     * @Mapping\Column(name="created_at", type="datetime", nullable=true)
      */
+    #[ORM\Column(
+        name: "created_at",
+        type: "datetime",
+        nullable: true
+    )]
     protected DateTime $createdAt;
 
     public function getCreatedAt(): DateTime
