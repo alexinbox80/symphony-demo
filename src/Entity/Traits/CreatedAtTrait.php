@@ -6,14 +6,10 @@ use Symfony\Component\Validator\Constraints\DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @Mapping\HasLifecycleCallbacks
+ * @ORM\HasLifecycleCallbacks()
  */
 trait CreatedAtTrait
 {
-    /**
-     * @var DateTime
-     *
-     */
     #[ORM\Column(
         name: "created_at",
         type: "datetime",
@@ -27,7 +23,7 @@ trait CreatedAtTrait
     }
 
     /**
-     * @Mapping\PrePersist
+     * @ORM\PrePersist()
      */
     public function setCreatedAt(): void
     {

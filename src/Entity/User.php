@@ -7,6 +7,9 @@ use App\Entity\Traits\UpdatedAtTrait;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * @ORM\HasLifecycleCallbacks()
+ */
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: "`users`")]
 class User

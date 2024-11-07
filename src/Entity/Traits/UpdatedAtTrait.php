@@ -3,18 +3,18 @@
 namespace App\Entity\Traits;
 
 use Symfony\Component\Validator\Constraints\DateTime;
-use Doctrine\ORM\Mapping;
+use Doctrine\ORM\Mapping as ORM;
 
-/*
- * @Mapping\HasLifecycleCallbacks
+/**
+ * @ORM\HasLifecycleCallbacks()
  */
 trait UpdatedAtTrait
 {
-    /**
-     * @var DateTime
-     *
-     * @Mapping\Column(name="updated_at", type="datetime", nullable=true)
-     */
+    #[ORM\Column(
+        name: "updated_at",
+        type: "datetime",
+        nullable: true
+    )]
     protected DateTime $updatedAt;
 
     public function getUpdatedAt(): DateTime
@@ -23,8 +23,8 @@ trait UpdatedAtTrait
     }
 
     /**
-     * @Mapping\PreUpdate
-     * @Mapping\PrePersist
+     * @ORM\PreUpdate()
+     * @ORM\PrePersist()
      */
     public function updateUpdatedAt(): void
     {
