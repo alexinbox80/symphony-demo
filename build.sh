@@ -24,3 +24,23 @@ composer require zenstruck/foundry --dev
 composer require symfony/password-hasher
 #make factory
 php bin/console make:factory
+
+#route lists
+php bin/console debug:router
+
+# make SQL request from console
+php bin/console dbal:run-sql 'SELECT * FROM users'
+
+#symfony install
+composer create-project symfony/skeleton symfony-demo
+
+composer require --dev doctrine/doctrine-fixtures-bundle
+
+composer require doctrine/doctrine-bundle doctrine/orm
+composer require doctrine/doctrine-migrations-bundle
+composer require jms/serializer-bundle
+composer require sensio/framework-extra-bundle
+composer require frendsofsymfony/rest-bundle
+composer require friendsofsymfony/rest-bundle
+composer require symfony/validator
+composer require symfony/serializer

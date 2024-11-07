@@ -4,12 +4,12 @@ namespace App\Controller\Api\V1;
 
 use App\Service\UserService;
 use FOS\RestBundle\View\View;
-use FOS\RestBundle\Controller\Annotations;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
-/**
- * @Annotations\Route("/api/v1/user")
- */
-class UserController
+class UserController extends AbstractController
 {
     /**
      * @var UserService
@@ -21,23 +21,25 @@ class UserController
         $this->userService = $userService;
     }
 
-    /**
-     * @Annotation\Get("")
-     * @Annotation\QueryParam(name="page", requirements="\d+", nullable=true)
-     * @Annotation\QueryParam(name="perPage", requirements="\d+", nullable=true)
-     *
-     * @param int|null $page
-     * @param int|null $perPage
-     * @return View
-     */
-    public function getUsersAction(?int $page = null, ?int $perPage = null): View
+    #[Route('/api/v1/user',
+        name: 'users',
+        requirements: ['page' => '\d+', 'per_page' => '\d+'],
+        methods: 'GET'
+    )]
+    public function getUsersAction(
+        SerializerInterface $serializer,
+        ?int $page = null,
+        ?int $perPage = null
+    ): JsonResponse
     {
         $users = $this->userService->getUsers($page ?? 0, $perPage ?? 20);
         $code = empty($users) ? 204 : 200;
 
-        return View::create([
-            'users' => $users,
-            $code
+        //return new JsonResponse($serializer->serialize($users, 'json'), $status = $code, $headers = []);
+        //return $this->json($serializer->serialize($users, 'json'));
+        return $this->json([
+            'users' => $serializer->serialize($users, 'json'),
+            'code' => $code
         ]);
     }
 

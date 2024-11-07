@@ -3,11 +3,11 @@
 namespace App\Factory;
 
 use App\Entity\User;
-use Symfony\Component\Validator\Constraints\DateTime;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 //use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
+
 
 /**
  * @extends PersistentProxyObjectFactory<User>
@@ -20,10 +20,10 @@ final class UserFactory extends PersistentProxyObjectFactory
      * @todo inject services if required
      */
     public function __construct(
-       // private readonly UserPasswordHasherInterface $passwordHasher
+        private readonly UserPasswordHasherInterface $passwordHasher
     )
     {
-        //parent::__construct();
+        parent::__construct();
     }
 
     public static function class(): string
@@ -59,12 +59,12 @@ final class UserFactory extends PersistentProxyObjectFactory
 //                $user->setPassword($hash);
 //            });
 
-        return $this;
-//            ->afterInstantiate(function (User $user): void {
-//                $user->setPassword($this->passwordHasher->hashPassword(
-//                    $user,
-//                    $user->getPassword()
-//                ));
-//            });
+        return $this
+            ->afterInstantiate(function (User $user): void {
+                $user->setPassword($this->passwordHasher->hashPassword(
+                    $user,
+                    $user->getPassword()
+                ));
+            });
     }
 }
