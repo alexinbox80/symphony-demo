@@ -9,6 +9,8 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: "`users`")]
@@ -17,6 +19,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     use CreatedAtTrait, UpdatedAtTrait;
 
+    /** One User has One Profile. */
+    #[ORM\OneToOne(targetEntity: Profile::class, mappedBy: 'profile')]
+    private Profile|null $profile = null;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -24,8 +30,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(
         length: 128,
-        nullable: false,
-        unique: true
+        unique: true,
+        nullable: false
     )]
     private ?string $email;
 
@@ -43,6 +49,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 //    #[ORM\Column]
 //    private array $roles = [];
 
+
+    public function __construct()
+    {
+   //     $this->profile = new ArrayCollection();
+    }
+
+    /**
+     * @return Profile
+     */
+    public function getProfile(): Profile
+    {
+        return $this->profile;
+    }
     /**
      * @return mixed
      */
@@ -137,5 +156,28 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    public function addProfile(Profile $profile): self
+    {
+//        if (!$this->profile->contains($profile)) {
+//            $this->profile[] = $profile;
+//            $profile->setUser($this);
+//        }
+
+        return $this;
+    }
+
+    public function removeProfile(Profile $profile): self
+    {
+//        if ($this->products->contains($product)) {
+//            $this->products->removeElement($product);
+//            // установить владеющую сторону как null (если ещё не изменена)
+//            if ($product->getCategory() === $this) {
+//                $product->setCategory(null);
+//            }
+//        }
+
+        return $this;
     }
 }
