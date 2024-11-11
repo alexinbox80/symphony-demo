@@ -56,13 +56,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Profile
-     */
-    public function getProfile(): Profile
-    {
-        return $this->profile;
-    }
-    /**
      * @return mixed
      */
     public function getId(): int
@@ -178,6 +171,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 //            }
 //        }
 
+        return $this;
+    }
+
+    /**
+     * @return Profile|null
+     */
+    public function getProfile(): ?Profile
+    {
+        return $this->profile;
+    }
+
+    /**
+     * @param Profile|null $profile
+     * @return self
+     */
+    public function setProfile(?Profile $profile): self
+    {
+        $this->profile = $profile;
         return $this;
     }
 }

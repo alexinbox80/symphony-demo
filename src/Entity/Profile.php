@@ -21,10 +21,6 @@ class Profile
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
     private User|null $user = null;
 
-    //private Collection $user;
-
-    //private Profile $profile;
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -48,6 +44,8 @@ class Profile
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $address = null;
 
+    private ?int $userId = null;
+
     public function __construct()
     {
   //      $this->user = new ArrayCollection();
@@ -61,12 +59,6 @@ class Profile
         return $this->user;
     }
 
-
-//    public function setUser(Profile $profile): self
-//    {
-////        $this->profile = $profile;
-//        return $this;
-//    }
     public function getId(): ?int
     {
         return $this->id;
@@ -140,6 +132,13 @@ class Profile
     public function setAddress(?string $address): static
     {
         $this->address = $address;
+
+        return $this;
+    }
+
+    public function setUserId(?int $userId): self
+    {
+        $this->userId = $userId;
 
         return $this;
     }

@@ -3,7 +3,6 @@
 namespace App\Factory;
 
 use App\Entity\Profile;
-use App\Entity\User;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
@@ -36,11 +35,11 @@ final class ProfileFactory extends PersistentProxyObjectFactory
         return [
             'name' => self::faker()->firstName,
             'surname' => self::faker()->lastName,
-            'nickname' => self::faker()->userName(),
+            'nickname' => self::faker()->userName,
             'phone' => self::faker()->phoneNumber,
             'avatar' => self::faker()->filePath(),
             'address' => self::faker()->address,
-            //'user_id' => UserFactory::createOne()->getId()
+            'user_id' => 1//UserFactory::createOne()->getId()
         ];
     }
 
