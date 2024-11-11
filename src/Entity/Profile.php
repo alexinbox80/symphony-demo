@@ -51,14 +51,6 @@ class Profile
   //      $this->user = new ArrayCollection();
     }
 
-    /**
-     * @return User
-     */
-    public function getUser(): User
-    {
-        return $this->user;
-    }
-
     public function getId(): ?int
     {
         return $this->id;
@@ -141,5 +133,23 @@ class Profile
         $this->userId = $userId;
 
         return $this;
+    }
+
+    /**
+     * @param User|null $user
+     * @return self
+     */
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
+        return $this;
+    }
+
+    /**
+     * @return User
+     */
+    public function getUser(): User
+    {
+        return $this->user;
     }
 }

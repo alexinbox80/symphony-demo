@@ -40,4 +40,18 @@ class ProfileRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function findOneByIdJoinedToUser(int $userId): ?Profile
+    {
+        $entityManager = $this->getEntityManager();
+
+        $query = $entityManager->createQuery(
+            'SELECT p, u
+            FROM App\Entity\Profile p
+            INNER JOIN p.user u
+            WHERE p.id = :id'
+        )->setParameter('id', $userId);
+
+        return $query->getOneOrNullResult();
+    }
 }

@@ -11,10 +11,7 @@ class AppFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        //UserFactory::createMany(100);
-        //ProfileFactory::createMany(100);
-
-        UserFactory::createMany(6, ['profile' => ProfileFactory::new()]);
+        ProfileFactory::createMany(20, ['user' => UserFactory::new()]);
 
         $manager->flush();
     }
