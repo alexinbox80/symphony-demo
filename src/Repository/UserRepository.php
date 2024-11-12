@@ -33,8 +33,16 @@ class UserRepository extends EntityRepository
 
         $em = $this->getEntityManager();
 //https://www.doctrine-project.org/projects/doctrine-orm/en/3.3/reference/dql-doctrine-query-language.html
-        $query = $em->createQuery("SELECT u, p FROM App\Entity\User u INNER JOIN App\Entity\Profile p ON u.id = p.user_id");
+        //$query = $em->createQuery('SELECT u, p FROM App\Entity\User u INNER JOIN App\Entity\Profile p ON u.id = p.user_id');
+        $query = $em->createQuery('SELECT u, p FROM App\Entity\User u INNER JOIN u.profile p');
+        //$query = $em->createQuery('SELECT u FROM App\Entity\User u');
+//          'SELECT u, p
+//                    FROM App\Entity\User u
+//                    INNER JOIN u.profile p
+//                    WHERE p.id = :id'
+        //$users = $query->getDQL();
         $users = $query->getResult();
+        //$users = $query->getArrayResult();
         dd($users);
 
         //dd($qb->getQuery()->getArrayResult());
@@ -44,4 +52,20 @@ class UserRepository extends EntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+//    public function findOneByIdJoinedToProfile(int $userId): ?User
+//    {
+//        $entityManager = $this->getEntityManager();
+
+//        $query = $entityManager->createQuery(
+//            'SELECT u, p
+//            FROM App\Entity\User u
+//            INNER JOIN u.profile p
+//            WHERE p.id = :id'
+//        )->setParameter('id', $userId);
+
+//        dd($query->getOneOrNullResult());
+
+ //       return $query->getOneOrNullResult();
+//    }
 }

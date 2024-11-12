@@ -1,11 +1,18 @@
 docker-compose up -d
 docker exec -it php sh
 
+#make new entity
+php bin/console make:entity
+
 
 #create migrations
 php bin/console doctrine:migrations:diff
+
 #migrate migrations
 php bin/console doctrine:migrations:migrate
+#execute specific migration
+php bin/console doctrine:migrations:execute --up 'DoctrineMigrations\\Version20241112095658'
+
 
 #drop all tables in database
 php bin/console doctrine:schema:drop --full-database --force

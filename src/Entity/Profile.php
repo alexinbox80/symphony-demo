@@ -17,7 +17,7 @@ class Profile
     use CreatedAtTrait, UpdatedAtTrait;
 
     /** One Profile has One User. */
-    #[ORM\OneToOne(targetEntity: User::class, inversedBy: 'profile')]
+    #[ORM\OneToOne(targetEntity: User::class, inversedBy: 'profile', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
     private User|null $user = null;
 
@@ -46,10 +46,10 @@ class Profile
 
     private ?int $userId = null;
 
-    public function __construct()
-    {
-  //      $this->user = new ArrayCollection();
-    }
+//    public function __construct()
+//    {
+//        //      $this->user = new ArrayCollection();
+//    }
 
     public function getId(): ?int
     {

@@ -20,7 +20,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     use CreatedAtTrait, UpdatedAtTrait;
 
     /** One User has One Profile. */
-    #[ORM\OneToOne(targetEntity: Profile::class, mappedBy: 'profile')]
+    #[ORM\OneToOne(targetEntity: Profile::class, mappedBy: 'profile', cascade: ['persist', 'remove'])]
     private Profile|null $profile = null;
 
     #[ORM\Id]
@@ -50,10 +50,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 //    private array $roles = [];
 
 
-    public function __construct()
-    {
-   //     $this->profile = new ArrayCollection();
-    }
+//    public function __construct()
+//    {
+//   //     $this->profile = new ArrayCollection();
+//    }
 
     /**
      * @return mixed
@@ -151,15 +151,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // $this->plainPassword = null;
     }
 
-    public function addProfile(Profile $profile): self
-    {
-//        if (!$this->profile->contains($profile)) {
-//            $this->profile[] = $profile;
-//            $profile->setUser($this);
-//        }
-
-        return $this;
-    }
+//    public function addProfile(Profile $profile): self
+//    {
+////        if (!$this->profile->contains($profile)) {
+////            $this->profile[] = $profile;
+////            $profile->setUser($this);
+////        }
+//
+//        return $this;
+//    }
 
     public function removeProfile(Profile $profile): self
     {
