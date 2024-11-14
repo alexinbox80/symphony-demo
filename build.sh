@@ -27,6 +27,9 @@ composer require symfony/maker-bundle --dev
 composer diagnose
 
 composer config -g repo.packagist composer https://packagist.org
+composer config --global repo.packagist composer packagist.org
+composer config -g secure-http false
+
 composer require zenstruck/foundry --dev
 composer require symfony/password-hasher
 #make factory
