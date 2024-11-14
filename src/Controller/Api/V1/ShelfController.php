@@ -22,8 +22,46 @@ final class ShelfController extends AbstractController
         ShelfRepository $shelfRepository
     ): JsonResponse
     {
+        $data = [
+            [
+                'id' => 1,
+                'title' => 'title1',
+                'description' => 'description1',
+                'book' => [
+                    'id' => 1,
+                    'title' => 'title1_1',
+                    'description' => 'description1_1',
+                ]
+            ],
+            [
+                'id' => 2,
+                'title' => 'title2',
+                'description' => 'description2',
+                'book' => [
+                    'id' => 2,
+                    'title' => 'title1_2',
+                    'description' => 'description1_2',
+                ]
+            ],
+            [
+                'id' => 3,
+                'title' => 'title3',
+                'description' => 'description3',
+                'book' => [
+                    'id' => 3,
+                    'title' => 'title1_3',
+                    'description' => 'description1_3',
+                ]
+            ]
+        ];
 
-        return (new JsonResponse($serializer->normalize(['data' => $shelfRepository->findAll()]), 200));
+        $data = $shelfRepository->findAll();
+
+        $response = new JsonResponse($serializer->normalize($data), 200);
+
+        dd($response);
+
+        return (new JsonResponse(['data' => $serializer->normalize($data), 'code' => 200], 200, [], false));
 
         //return ('data' => $shelfRepository->findAll());
 
