@@ -6,8 +6,6 @@ use App\Entity\Traits\CreatedAtTrait;
 use App\Entity\Traits\UpdatedAtTrait;
 use App\Repository\ProfileRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity(repositoryClass: ProfileRepository::class)]
 #[ORM\Table(name: "`profiles`")]
@@ -15,11 +13,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 class Profile
 {
     use CreatedAtTrait, UpdatedAtTrait;
-
-    /** One Profile has One User. */
-    #[ORM\OneToOne(targetEntity: User::class, inversedBy: 'profile', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
-    private User|null $user = null;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -44,7 +37,12 @@ class Profile
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $address = null;
 
-    private ?int $userId = null;
+    /** One Profile has One User. */
+    #[ORM\OneToOne(targetEntity: User::class, inversedBy: 'profile', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
+    private User|null $user = null;
+
+//    private ?int $userId = null;
 
 //    public function __construct()
 //    {
@@ -128,12 +126,12 @@ class Profile
         return $this;
     }
 
-    public function setUserId(?int $userId): self
-    {
-        $this->userId = $userId;
-
-        return $this;
-    }
+//    public function setUserId(?int $userId): self
+//    {
+//        $this->userId = $userId;
+//
+//        return $this;
+//    }
 
     /**
      * @param User|null $user

@@ -9,8 +9,6 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: "`users`")]
@@ -18,10 +16,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     use CreatedAtTrait, UpdatedAtTrait;
-
-    /** One User has One Profile. */
-    #[ORM\OneToOne(targetEntity: Profile::class, mappedBy: 'profile', cascade: ['persist', 'remove'])]
-    private Profile|null $profile = null;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -46,14 +40,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     )]
     private \DateTime|null $email_verified_at = null;
 
-//    #[ORM\Column]
-//    private array $roles = [];
+    #[ORM\Column(
+        name: 'roles',
+        type: Types::SIMPLE_ARRAY,
+        options: ['default' => 'ROLE_USER']
+    )]
+    private array $roles = [];
 
-
-//    public function __construct()
-//    {
-//   //     $this->profile = new ArrayCollection();
-//    }
+    /** One User has One Profile. */
+    #[ORM\OneToOne(targetEntity: Profile::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
+    private Profile|null $profile = null;
 
     /**
      * @return mixed
@@ -78,20 +74,32 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        return (string)$this->email;
     }
 
     /**
-     * @see UserInterface
+     * @param array $roles
+     * @return $this
+     */
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    /**
+     * @return array|string[]
      */
     public function getRoles(): array
     {
-//        $roles = $this->roles;
+        $roles = $this->roles;
 //        // guarantee every user at least has ROLE_USER
 //        $roles[] = 'ROLE_USER';
 //        return array_unique($roles);
-        return [];
+        return $roles;
     }
+
     /**
      * @return string
      */

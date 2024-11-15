@@ -6,41 +6,57 @@ use App\Service\UserService;
 use FOS\RestBundle\View\View;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 
 class UserController extends AbstractController
 {
-    /**
-     * @var UserService
-     */
-    private UserService $userService;
+//    /**
+//     * @var UserService
+//     */
+//    private UserService $userService;
 
-    public function __construct(UserService $userService)
-    {
-        $this->userService = $userService;
-    }
+//    public function __construct(UserService $userService)
+//    {
+//        $this->userService = $userService;
+//    }
 
     #[Route('/api/v1/user',
-        name: 'users',
-        requirements: ['page' => '\d+', 'per_page' => '\d+'],
-        methods: 'GET'
+        name: 'app_api_v1_user_index ',
+        requirements: ['page' => '\d+', 'perPage' => '\d+'],
+        methods: ['GET']
     )]
     public function getUsersAction(
-        SerializerInterface $serializer,
-        ?int $page = null,
-        ?int $perPage = null
+        UserService $userService,
+        #[MapQueryParameter] ?int $page = null
+        //Request $request
+//        ?int $page = null,
+//        ?int $perPage = null
     ): JsonResponse
     {
-        $users = $this->userService->getUsers($page ?? 0, $perPage ?? 20);
-        $code = empty($users) ? 204 : 200;
+        //$page = $request->query->getInt('page', 0);
+
+        $users = $userService->getUsers($page ?? 0, $perPage ?? 20);
+        $code = empty($users) ? Response::HTTP_NO_CONTENT : Response::HTTP_OK;
+
+        if (empty($users)) {
+            return new JsonResponse([
+                'msg' => 'Users not found!',
+                'code' => Response::HTTP_NOT_FOUND
+            ], Response::HTTP_NOT_FOUND);
+        }
 
         //return new JsonResponse($serializer->serialize($users, 'json'), $status = $code, $headers = []);
         //return $this->json($serializer->serialize($users, 'json'));
-        return $this->json([
-            'users' => $serializer->serialize($users, 'json'),
-            'code' => $code
-        ]);
+//        return $this->json([
+//            'users' => $serializer->serialize($users, 'json'),
+//            'code' => $code
+//        ], $code);
+
+        return ($this->json($users, $code, context: [AbstractNormalizer::IGNORED_ATTRIBUTES => ['password']]));
     }
 
     /**

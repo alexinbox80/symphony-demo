@@ -11,6 +11,13 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
  */
 final class UserFactory extends PersistentProxyObjectFactory
 {
+
+    private array $roles = [
+        'ROLE_ADMIN',
+        'ROLE_USER',
+        'ROLE_MANAGER'
+    ];
+
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
      *
@@ -38,7 +45,8 @@ final class UserFactory extends PersistentProxyObjectFactory
         return [
             'email' => self::faker()->email(),
             'email_verified_at' => self::faker()->dateTime(),
-            'password' => 'password'
+            'password' => 'password',
+            'role' => $this->roles[rand(0, 2)]
         ];
     }
 
