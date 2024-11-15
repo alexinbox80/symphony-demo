@@ -38,8 +38,7 @@ final class ProfileFactory extends PersistentProxyObjectFactory
             'nickname' => self::faker()->userName,
             'phone' => self::faker()->phoneNumber,
             'avatar' => self::faker()->filePath(),
-            'address' => self::faker()->address,
-            'user_id' => 1//UserFactory::createOne()->getId()
+            'address' => self::faker()->address
         ];
     }
 

@@ -11,72 +11,22 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
+
 #[Route('/api/v1/shelf')]
 final class ShelfController extends AbstractController
 {
     #[Route(name: 'app_api_v1_shelf_index', methods: ['GET'])]
     public function index(
-        SerializerInterface $serializer,
         ShelfRepository $shelfRepository
     ): JsonResponse
     {
-        $data = [
-            [
-                'id' => 1,
-                'title' => 'title1',
-                'description' => 'description1',
-                'book' => [
-                    'id' => 1,
-                    'title' => 'title1_1',
-                    'description' => 'description1_1',
-                ]
-            ],
-            [
-                'id' => 2,
-                'title' => 'title2',
-                'description' => 'description2',
-                'book' => [
-                    'id' => 2,
-                    'title' => 'title1_2',
-                    'description' => 'description1_2',
-                ]
-            ],
-            [
-                'id' => 3,
-                'title' => 'title3',
-                'description' => 'description3',
-                'book' => [
-                    'id' => 3,
-                    'title' => 'title1_3',
-                    'description' => 'description1_3',
-                ]
-            ]
-        ];
+        $data = $shelfRepository->findByShelf();
 
-        $data = $shelfRepository->findAll();
+        if (empty($data)) {
+            return new JsonResponse(['msg' => 'Shelf not found!'], Response::HTTP_NOT_FOUND);
+        }
 
-        $response = new JsonResponse($serializer->normalize($data), 200);
-
-        dd($response);
-
-        return (new JsonResponse(['data' => $serializer->normalize($data), 'code' => 200], 200, [], false));
-
-        //return ('data' => $shelfRepository->findAll());
-
-        //dd(new JsonResponse([$shelfRepository->findAll(), $status = 200, $headers = [], $context = []]));
-
-//        $data = $serializer->serialize($shelfRepository->findAll(), JsonEncoder::FORMAT);
-//        dd($data);
-//        dd(new JsonResponse($data, Response::HTTP_OK, [], true));
-        //return new JsonResponse($data, Response::HTTP_OK, [], true);
-
-       // return $this->json(['shelves' => $shelfRepository->findAll()], 200);
-        //$shelfRepository->findAll();
-//        return $this->render('api/v1/shelf/index.html.twig', [
-//            'shelves' => $shelfRepository->findAll(),
-//        ]);
+        return ($this->json($data, Response::HTTP_OK));
     }
 
     #[Route('/new', name: 'app_api_v1_shelf_new', methods: ['GET', 'POST'])]

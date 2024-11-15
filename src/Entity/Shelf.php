@@ -2,12 +2,18 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\CreatedAtTrait;
+use App\Entity\Traits\UpdatedAtTrait;
 use App\Repository\ShelfRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Ignore;
 
 #[ORM\Entity(repositoryClass: ShelfRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Shelf
 {
+    use CreatedAtTrait, UpdatedAtTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -19,6 +25,7 @@ class Shelf
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $description = null;
 
+    //#[Ignore]
     #[ORM\OneToOne(mappedBy: 'shelf', cascade: ['persist', 'remove'])]
     private ?Book $book = null;
 
@@ -50,7 +57,6 @@ class Shelf
 
         return $this;
     }
-
     public function getBook(): ?Book
     {
         return $this->book;

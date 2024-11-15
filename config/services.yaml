@@ -27,3 +27,17 @@ services:
         class: App\Symfony\MigrationEventSubscriber
         tags:
             - { name: doctrine.event_subscriber, connection: default }
+
+
+    app.normalizer.object_normalizer:
+        class: Symfony\Component\Serializer\Normalizer\ObjectNormalizer
+        tags: [ 'serializer.normalizer' ]
+        arguments:
+            $defaultContext:
+                circular_reference_handler: '@App\Serializer\CircularReferenceHandler'
+                ignored_attributes: [ 'insertedOn', 'updatedOn' ]
+                callbacks: {
+                    'updatedAt': '@App\Serializer\UpdatedAtCreatedAtCallback',
+                    'createdAt': '@App\Serializer\UpdatedAtCreatedAtCallback',
+                }
+

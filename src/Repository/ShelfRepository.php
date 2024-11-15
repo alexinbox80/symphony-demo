@@ -16,6 +16,11 @@ class ShelfRepository extends ServiceEntityRepository
         parent::__construct($registry, Shelf::class);
     }
 
+    public function findByShelf(): array
+    {
+        return $this->findAll();
+    }
+
     //    /**
     //     * @return Shelf[] Returns an array of Shelf objects
     //     */
