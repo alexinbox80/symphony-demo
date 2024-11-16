@@ -46,7 +46,8 @@ final class UserFactory extends PersistentProxyObjectFactory
             'email' => self::faker()->email(),
             'email_verified_at' => self::faker()->dateTime(),
             'password' => 'password',
-            'role' => $this->roles[rand(0, 2)]
+            'roles' => [$this->roles[rand(0, 2)]],
+            'isActive' => (bool)(rand(0, 2) % 2) ? true : false
         ];
     }
 

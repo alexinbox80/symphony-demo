@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Ignore;
 
 #[ORM\Entity(repositoryClass: ShelfRepository::class)]
+#[ORM\Table(name: "`shelves`")]
 #[ORM\HasLifecycleCallbacks]
 class Shelf
 {

@@ -42,10 +42,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(
         name: 'roles',
-        type: Types::SIMPLE_ARRAY,
-        options: ['default' => 'ROLE_USER']
+        type: Types::JSON,
+        //options: ['default' => 'ROLE_USER']
     )]
     private array $roles = [];
+
+    #[ORM\Column(
+        name: 'isActive',
+        type: Types::BOOLEAN,
+        options: ['default' => false]
+    )]
+    private bool $isActive;
 
     /** One User has One Profile. */
     #[ORM\OneToOne(targetEntity: Profile::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
@@ -94,10 +101,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-//        // guarantee every user at least has ROLE_USER
-//        $roles[] = 'ROLE_USER';
-//        return array_unique($roles);
-        return $roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+        return array_unique($roles);
     }
 
     /**
@@ -198,5 +204,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->profile = $profile;
         return $this;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): void
+    {
+        $this->isActive = $isActive;
     }
 }

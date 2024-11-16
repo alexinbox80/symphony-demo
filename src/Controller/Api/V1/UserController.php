@@ -38,7 +38,7 @@ class UserController extends AbstractController
     ): JsonResponse
     {
         //$page = $request->query->getInt('page', 0);
-
+        //is_numeric
         $users = $userService->getUsers($page ?? 0, $perPage ?? 20);
         $code = empty($users) ? Response::HTTP_NO_CONTENT : Response::HTTP_OK;
 
