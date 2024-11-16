@@ -2,6 +2,7 @@
 
 namespace App\Entity\Traits;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\HasLifecycleCallbacks]
@@ -9,7 +10,7 @@ trait UpdatedAtTrait
 {
     #[ORM\Column(
         name: 'updated_at',
-        type: 'datetime',
+        type: Types::DATETIME_MUTABLE,
         nullable: true
     )]
     protected \DateTime $updatedAt;

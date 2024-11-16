@@ -2,36 +2,27 @@
 
 namespace App\Controller\Api\V1;
 
+use App\DTO\UserDTO;
 use App\Service\UserService;
-use FOS\RestBundle\View\View;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 
+#[Route('/api/v1/user')]
 class UserController extends AbstractController
 {
-//    /**
-//     * @var UserService
-//     */
-//    private UserService $userService;
-
-//    public function __construct(UserService $userService)
-//    {
-//        $this->userService = $userService;
-//    }
-
-    #[Route('/api/v1/user',
-        name: 'app_api_v1_user_index ',
+    #[Route(
+        name: 'app_api_v1_user_index',
         requirements: ['page' => '\d+', 'perPage' => '\d+'],
         methods: ['GET']
     )]
     public function getUsersAction(
         UserService $userService,
-        #[MapQueryParameter] ?int $page = null
+        #[MapQueryParameter(filter: \FILTER_VALIDATE_INT)] ?int $page = null
         //Request $request
 //        ?int $page = null,
 //        ?int $perPage = null
@@ -56,60 +47,85 @@ class UserController extends AbstractController
 //            'code' => $code
 //        ], $code);
 
-        return ($this->json($users, $code, context: [AbstractNormalizer::IGNORED_ATTRIBUTES => ['password']]));
+        return $this->json($users, $code, context: [AbstractNormalizer::IGNORED_ATTRIBUTES => ['password']]);
     }
 
-    /**
-     * @Annotation\Post("")
-     * @Annotation\RequestParam(name="login", requirements="\w{0,32}")
-     *
-     * @param string $login
-     * @return View
-     */
-    public function saveUserAction(string $login): View
+    #[Route(
+        name: 'app_api_v1_user_create',
+        methods: ['POST'],
+        format: 'json'
+    )]
+    public function apiCreateUserAction(
+        UserService $userService,
+        #[MapRequestPayload(acceptFormat: 'json')] UserDTO $userDTO,
+    ): JsonResponse
     {
-        $userId = $this->userService->saveUser($login);
+        $userId = $userService->saveUser($userDTO);
+
         [$data, $code] = $userId === null ?
-            [['success' => false], 400] :
-            [['success' => true, 'userId' => $userId], 200];
+            [['success' => false], Response::HTTP_BAD_REQUEST] :
+            [['success' => true, 'userId' => $userId], Response::HTTP_OK];
 
-        return View::create($data, $code);
+        return $this->json($data, $code);
     }
 
-    /**
-     * @Annotation\Patch("")
-     * @Annotation\QueryParam(name="userId", requirements="\d+", nullable=false)
-     * @Annotation\QueryParam(name="login", requirements="\w{0, 32}")
-     *
-     * @param int $userId
-     * @return View
-     */
-    public function updateUserAction(int $userId, string $login): View
+    #[Route('/{id}/edit',
+        name: 'app_api_v1_user_update',
+        methods: ['PUT'],
+        format: 'json'
+    )]
+    public function apiUpdateUserAction(
+        UserService $userService,
+        int $userId, string $login
+    ): JsonResponse
     {
-        $result = $this->userService->updateUser($userId, $login);
+        $result = $userService->updateUser($userId, $login);
 
-        return View::create([
-            'success' => $result
-        ],
-            $result ? 200 : 404
-        );
+//        return View::create([
+//            'success' => $result
+//        ],
+//            $result ? 200 : 404
+//        );
+        return $this->json([]);
     }
 
-    /**
-     * @Annotation\Delete("")
-     * @Annotation\QueryParam(name="userId", requirements="\d+", nullable=false)
-     *
-     * @param int $userId
-     * @return View
-     */
-    public function deleteUserAction(int $userId): View
+    #[Route('/{id}',
+        name: 'app_api_v1_user_show',
+        methods: ['GET'],
+        format: 'json'
+    )]
+    public function apiShowUserAction(
+        UserService $userService,
+        int $userId, string $login
+    ): JsonResponse
     {
-        $result = $this->userService->deleteUser($userId);
+        $result = $userService->updateUser($userId, $login);
 
-        return View::create([
-            'success' => $result
-        ],
-            $result ? 200 : 404
-        );
+//        return View::create([
+//            'success' => $result
+//        ],
+//            $result ? 200 : 404
+//        );
+        return $this->json([]);
+    }
+
+    #[Route('/{id}',
+        name: 'app_api_v1_user_delete',
+        methods: ['DELETE'],
+        format: 'json'
+    )]
+    public function apiDeleteUserAction(
+        UserService $userService,
+        int $userId
+    ): JsonResponse
+    {
+        $result = $userService->deleteUser($userId);
+
+//        return View::create([
+//            'success' => $result
+//        ],
+//            $result ? 200 : 404
+//        );
+        return $this->json([]);
     }
 }

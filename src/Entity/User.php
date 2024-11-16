@@ -117,9 +117,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @param string $email
      */
-    public function setEmail(string $email): void
+    public function setEmail(string $email): self
     {
         $this->email = $email;
+
+        return $this;
     }
 
     /**
@@ -134,9 +136,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @param string|null $password
      * @return void
      */
-    public function setPassword(?string $password): void
+    public function setPassword(?string $password): self
     {
         $this->password = $password;
+
+        return $this;
     }
 
     /**
@@ -211,8 +215,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->isActive;
     }
 
-    public function setIsActive(bool $isActive): void
+    public function setIsActive(bool $isActive): self
     {
         $this->isActive = $isActive;
+
+        return $this;
     }
 }

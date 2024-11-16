@@ -5,6 +5,7 @@ namespace App\Factory;
 use App\Entity\User;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use App\ValueObject\UserRoleEnum;
 
 /**
  * @extends PersistentProxyObjectFactory<User>
@@ -13,9 +14,10 @@ final class UserFactory extends PersistentProxyObjectFactory
 {
 
     private array $roles = [
-        'ROLE_ADMIN',
-        'ROLE_USER',
-        'ROLE_MANAGER'
+        UserRoleEnum::ROLE_ADMIN->name,
+        UserRoleEnum::ROLE_USER->name,
+        UserRoleEnum::ROLE_MANAGER->name,
+        UserRoleEnum::ROLE_GUEST->name
     ];
 
     /**
