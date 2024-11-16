@@ -6,6 +6,7 @@ use App\DTO\UserDTO;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserService
 {
@@ -15,7 +16,10 @@ class UserService
      */
     private EntityManagerInterface $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        private readonly UserPasswordHasherInterface $passwordHasher
+    )
     {
         $this->entityManager = $entityManager;
     }
@@ -44,9 +48,14 @@ class UserService
         $user = new User();
         $user
             ->setEmail($userDTO->email)
-            ->setPassword($userDTO->email)
+            ->setPassword($userDTO->password)
             ->setIsActive($userDTO->isActive)
             ->setRoles($userDTO->roles);
+
+        $user->setPassword($this->passwordHasher->hashPassword(
+            $user,
+            $user->getPassword()
+        ));
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();
