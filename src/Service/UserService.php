@@ -63,7 +63,12 @@ class UserService
         return $user->getId();
     }
 
-    public function updateUser(int $userId, string $login): bool
+    /**
+     * @param UserDTO $userDTO
+     * @param int $userId
+     * @return bool
+     */
+    public function updateUser(UserDTO $userDTO, int $userId): bool
     {
         /**
          * @var UserRepository $userRepository
@@ -78,12 +83,39 @@ class UserService
         if ($user === null)
             return false;
 
-        $user->setLogin($login);
+        $user
+            ->setEmail($userDTO->email)
+            ->setPassword($userDTO->password)
+            ->setIsActive($userDTO->isActive)
+            ->setRoles($userDTO->roles);
+
         $this->entityManager->flush();
 
         return true;
     }
 
+    /**
+     * @param int $userId
+     * @return User|null
+     */
+    public function showUser(int $userId): User|null
+    {
+        /**
+         * @var UserRepository $userRepository
+         */
+        $userRepository = $this->entityManager->getRepository(User::class);
+
+        $user = $userRepository->find($userId);
+        if ($user === null)
+            return null;
+        else
+            return $user;
+    }
+
+    /**
+     * @param int $userId
+     * @return bool
+     */
     public function deleteUser(int $userId): bool
     {
         /**

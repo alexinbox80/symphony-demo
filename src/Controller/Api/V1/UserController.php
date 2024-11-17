@@ -71,61 +71,64 @@ class UserController extends AbstractController
 
     #[Route('/{id}/edit',
         name: 'app_api_v1_user_update',
+        requirements: ['id' => '\d+'],
         methods: ['PUT'],
         format: 'json'
     )]
     public function apiUpdateUserAction(
         UserService $userService,
-        int $userId, string $login
+        #[MapRequestPayload(acceptFormat: 'json')] UserDTO $userDTO,
+        int $id
     ): JsonResponse
     {
-        $result = $userService->updateUser($userId, $login);
+        $result = $userService->updateUser($userDTO, $id);
 
-//        return View::create([
-//            'success' => $result
-//        ],
-//            $result ? 200 : 404
-//        );
-        return $this->json([]);
+        return $this->json([
+            'success' => $result,
+            'code' => $result ? Response::HTTP_OK : Response::HTTP_NOT_FOUND
+        ]);
     }
 
     #[Route('/{id}',
         name: 'app_api_v1_user_show',
+        requirements: ['id' => '\d+'],
         methods: ['GET'],
         format: 'json'
     )]
     public function apiShowUserAction(
         UserService $userService,
-        int $userId, string $login
+        int $id,
     ): JsonResponse
     {
-        $result = $userService->updateUser($userId, $login);
+        $user = $userService->showUser($id);
+        $code = empty($user) ? Response::HTTP_NO_CONTENT : Response::HTTP_OK;
 
-//        return View::create([
-//            'success' => $result
-//        ],
-//            $result ? 200 : 404
-//        );
-        return $this->json([]);
+        if (empty($user)) {
+            return new JsonResponse([
+                'message' => 'Users not found!',
+                'code' => Response::HTTP_NOT_FOUND
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        return $this->json($user, $code, context: [AbstractNormalizer::IGNORED_ATTRIBUTES => ['password']]);
     }
 
     #[Route('/{id}',
         name: 'app_api_v1_user_delete',
+        requirements: ['id' => '\d+'],
         methods: ['DELETE'],
         format: 'json'
     )]
     public function apiDeleteUserAction(
         UserService $userService,
-        int $userId
+        int $id
     ): JsonResponse
     {
-        $result = $userService->deleteUser($userId);
+        $result = $userService->deleteUser($id);
 
-//        return View::create([
-//            'success' => $result
-//        ],
-//            $result ? 200 : 404
-//        );
-        return $this->json([]);
+        return $this->json([
+            'success' => $result,
+            'code' => $result ? Response::HTTP_OK : Response::HTTP_NOT_FOUND
+        ], Response::HTTP_NOT_FOUND);
     }
 }

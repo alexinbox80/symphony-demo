@@ -35,8 +35,11 @@ composer require symfony/password-hasher
 #make factory
 php bin/console make:factory
 
-#route lists
+#show route lists
 php bin/console debug:router
+#show validate rules of object
+php bin/console debug:validator 'App\DTO\UserDTO'
+
 
 # make SQL request from console
 php bin/console dbal:run-sql 'SELECT * FROM users'
