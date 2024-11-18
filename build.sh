@@ -39,7 +39,8 @@ php bin/console make:factory
 php bin/console debug:router
 #show validate rules of object
 php bin/console debug:validator 'App\DTO\UserDTO'
-
+#show Registered Listeners for "kernel.exception" Event
+php bin/console debug:event-dispatcher kernel.exception
 
 # make SQL request from console
 php bin/console dbal:run-sql 'SELECT * FROM users'
