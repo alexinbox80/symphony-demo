@@ -4,6 +4,8 @@ namespace App\Service;
 
 use App\DTO\UserDTO;
 use App\Entity\User;
+use App\Exception\EntityAlreadyExistException;
+use App\Exception\EntityNotFoundException;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -28,22 +30,32 @@ class UserService
      * @param int $page
      * @param int $perPage
      * @return array
+     * @throws EntityNotFoundException
      */
     public function getUsers(int $page, int $perPage): array
     {
+        if ($page < 0)
+            throw new EntityNotFoundException();
+
         /**
          * @var UserRepository $userRepository
          */
         $userRepository = $this->entityManager->getRepository(User::class);
 
-        return $userRepository->getUsers($page, $perPage);
+        $users = $userRepository->getUsers($page, $perPage);
+
+        if (empty($users))
+            throw new EntityNotFoundException();
+
+        return $users;
     }
 
     /**
      * @param UserDTO $userDTO
-     * @return int|null
+     * @return User
+     * @throws EntityAlreadyExistException
      */
-    public function saveUser(UserDTO $userDTO): ?int
+    public function saveUser(UserDTO $userDTO): User
     {
         $user = new User();
         $user
@@ -58,17 +70,23 @@ class UserService
         ));
 
         $this->entityManager->persist($user);
-        $this->entityManager->flush();
 
-        return $user->getId();
+        try {
+            $this->entityManager->flush();
+        } catch (\Exception $e) {
+            throw new EntityAlreadyExistException();
+        }
+
+        return $user;
     }
 
     /**
      * @param UserDTO $userDTO
      * @param int $userId
-     * @return bool
+     * @return User
+     * @throws EntityNotFoundException
      */
-    public function updateUser(UserDTO $userDTO, int $userId): bool
+    public function updateUser(UserDTO $userDTO, int $userId): User
     {
         /**
          * @var UserRepository $userRepository
@@ -80,8 +98,10 @@ class UserService
          */
 
         $user = $userRepository->find($userId);
+
         if ($user === null)
-            return false;
+            //return false;
+            throw new EntityNotFoundException();
 
         $user
             ->setEmail($userDTO->email)
@@ -91,7 +111,7 @@ class UserService
 
         $this->entityManager->flush();
 
-        return true;
+        return $user;
     }
 
     /**

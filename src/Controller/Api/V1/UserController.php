@@ -2,7 +2,10 @@
 
 namespace App\Controller\Api\V1;
 
+use App\Entity\User;
 use App\DTO\UserDTO;
+use App\Exception\EntityAlreadyExistException;
+use App\Exception\EntityNotFoundException;
 use App\Service\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -15,6 +18,12 @@ use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 #[Route('/api/v1/user')]
 class UserController extends AbstractController
 {
+    /**
+     * @param UserService $userService
+     * @param int|null $page
+     * @return array
+     * @throws EntityNotFoundException
+     */
     #[Route(
         name: 'app_api_v1_user_index',
         requirements: ['page' => '\d+', 'perPage' => '\d+'],
@@ -26,19 +35,21 @@ class UserController extends AbstractController
         //Request $request
 //        ?int $page = null,
 //        ?int $perPage = null
-    ): JsonResponse
+    ): array //JsonResponse
     {
         //$page = $request->query->getInt('page', 0);
         //is_numeric
-        $users = $userService->getUsers($page ?? 0, $perPage ?? 20);
-        $code = empty($users) ? Response::HTTP_NO_CONTENT : Response::HTTP_OK;
 
-        if (empty($users)) {
-            return new JsonResponse([
-                'msg' => 'Users not found!',
-                'code' => Response::HTTP_NOT_FOUND
-            ], Response::HTTP_NOT_FOUND);
-        }
+        return $userService->getUsers($page ?? 0, $perPage ?? 20);
+//        $code = empty($users) ? Response::HTTP_NOT_FOUND : Response::HTTP_OK;
+
+//        if (empty($users)) {
+//            return new JsonResponse([
+//                'status' => false,
+//                'message' => 'Users not found!',
+//                'code' => $code
+//            ], $code);
+//        }
 
         //return new JsonResponse($serializer->serialize($users, 'json'), $status = $code, $headers = []);
         //return $this->json($serializer->serialize($users, 'json'));
@@ -47,9 +58,12 @@ class UserController extends AbstractController
 //            'code' => $code
 //        ], $code);
 
-        return $this->json($users, $code, context: [AbstractNormalizer::IGNORED_ATTRIBUTES => ['password']]);
+        //return $this->json($users, $code, context: [AbstractNormalizer::IGNORED_ATTRIBUTES => ['password']]);
     }
 
+    /**
+     * @throws EntityAlreadyExistException
+     */
     #[Route(
         name: 'app_api_v1_user_create',
         methods: ['POST'],
@@ -58,17 +72,21 @@ class UserController extends AbstractController
     public function apiCreateUserAction(
         UserService $userService,
         #[MapRequestPayload(acceptFormat: 'json')] UserDTO $userDTO,
-    ): JsonResponse
+    ): User//JsonResponse
     {
-        $userId = $userService->saveUser($userDTO);
+        //$userId =
+        return $userService->saveUser($userDTO);
 
-        [$data, $code] = $userId === null ?
-            [['success' => false], Response::HTTP_BAD_REQUEST] :
-            [['success' => true, 'userId' => $userId], Response::HTTP_OK];
+//        [$data, $code] = $userId === null ?
+//            [['success' => false], Response::HTTP_BAD_REQUEST] :
+//            [['success' => true, 'userId' => $userId], Response::HTTP_OK];
 
-        return $this->json($data, $code);
+        //return $this->json($data, $code);
     }
 
+    /**
+     * @throws EntityNotFoundException
+     */
     #[Route('/{id}/edit',
         name: 'app_api_v1_user_update',
         requirements: ['id' => '\d+'],
@@ -79,14 +97,14 @@ class UserController extends AbstractController
         UserService $userService,
         #[MapRequestPayload(acceptFormat: 'json')] UserDTO $userDTO,
         int $id
-    ): JsonResponse
+    ): User // JsonResponse
     {
-        $result = $userService->updateUser($userDTO, $id);
+        return $userService->updateUser($userDTO, $id);
 
-        return $this->json([
-            'success' => $result,
-            'code' => $result ? Response::HTTP_OK : Response::HTTP_NOT_FOUND
-        ]);
+//        return $this->json([
+//            'success' => $result,
+//            'code' => $result ? Response::HTTP_OK : Response::HTTP_NOT_FOUND
+//        ]);
     }
 
     #[Route('/{id}',

@@ -42,3 +42,14 @@ services:
                     'emailVerifiedAt': '@App\Serializer\UpdatedAtCreatedAtCallback',
                 }
 
+    App\EventListener\KernelViewEventListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.view }
+
+    App\EventListener\KernelExceptionEventListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception }
+
+#    App\Core\EventListener\ExceptionListener:
+#        tags:
+#            - { name: kernel.event_listener, event: kernel.exception }
