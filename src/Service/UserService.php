@@ -27,22 +27,27 @@ class UserService
     }
 
     /**
-     * @param int $page
+     * @param ?int | null $page
      * @param int $perPage
      * @return array
      * @throws EntityNotFoundException
      */
-    public function getUsers(int $page, int $perPage): array
+    public function getUsers(int | null $page, int $perPage): array
     {
-        if ($page < 0)
-            throw new EntityNotFoundException();
-
         /**
          * @var UserRepository $userRepository
          */
         $userRepository = $this->entityManager->getRepository(User::class);
 
-        $users = $userRepository->getUsers($page, $perPage);
+        $users[] = [];
+        if ($page === null) {
+            $users = $userRepository->findBy([], ['id' =>'DESC']);
+        } else {
+            if ($page < 0)
+                throw new EntityNotFoundException();
+
+            $users = $userRepository->getUsers($page, $perPage);
+        }
 
         if (empty($users))
             throw new EntityNotFoundException();
@@ -60,14 +65,12 @@ class UserService
         $user = new User();
         $user
             ->setEmail($userDTO->email)
-            ->setPassword($userDTO->password)
+            ->setPassword($this->passwordHasher->hashPassword(
+                $user,
+                $userDTO->password
+            ))
             ->setIsActive($userDTO->isActive)
             ->setRoles($userDTO->roles);
-
-        $user->setPassword($this->passwordHasher->hashPassword(
-            $user,
-            $user->getPassword()
-        ));
 
         $this->entityManager->persist($user);
 
@@ -100,12 +103,14 @@ class UserService
         $user = $userRepository->find($userId);
 
         if ($user === null)
-            //return false;
             throw new EntityNotFoundException();
 
         $user
             ->setEmail($userDTO->email)
-            ->setPassword($userDTO->password)
+            ->setPassword($this->passwordHasher->hashPassword(
+                $user,
+                $userDTO->password
+            ))
             ->setIsActive($userDTO->isActive)
             ->setRoles($userDTO->roles);
 

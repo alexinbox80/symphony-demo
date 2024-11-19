@@ -40,7 +40,7 @@ class UserController extends AbstractController
         //$page = $request->query->getInt('page', 0);
         //is_numeric
 
-        return $userService->getUsers($page ?? 0, $perPage ?? 20);
+        return $userService->getUsers($page, $perPage ?? 20);
 //        $code = empty($users) ? Response::HTTP_NOT_FOUND : Response::HTTP_OK;
 
 //        if (empty($users)) {

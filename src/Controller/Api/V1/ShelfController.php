@@ -2,87 +2,147 @@
 
 namespace App\Controller\Api\V1;
 
-use App\Entity\Shelf;
-use App\Form\ShelfType;
-use App\Repository\ShelfRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use App\DTO\ShelfDTO;
+use App\Service\ShelfService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/api/v1/shelf')]
-final class ShelfController extends AbstractController
+#[Route('/api/v1/profile')]
+class ShelfController extends AbstractController
 {
-    #[Route(name: 'app_api_v1_shelf_index', methods: ['GET'])]
-    public function index(
-        ShelfRepository $shelfRepository
+    /**
+     * @param ShelfService $shelfService
+     * @param int|null $page
+     * @return JsonResponse
+     */
+    #[Route(
+        name: 'app_api_v1_shelf_index',
+        requirements: ['page' => '\d+', 'perPage' => '\d+'],
+        methods: ['GET']
+    )]
+    public function getShelvesAction(
+        ShelfService $shelfService,
+        #[MapQueryParameter(filter: \FILTER_VALIDATE_INT)] ?int $page = null
     ): JsonResponse
     {
-        $data = $shelfRepository->findByShelf();
+        $shelves = $shelfService->getShelves($page, $perPage ?? 20);
+        $code = empty($shelves) ? Response::HTTP_NOT_FOUND : Response::HTTP_OK;
 
-        if (empty($data)) {
-            return new JsonResponse(['msg' => 'Shelf not found!'], Response::HTTP_NOT_FOUND);
+        if (empty($shelves)) {
+            return new JsonResponse([
+                'status' => false,
+                'message' => 'Shelves not found!',
+                'code' => $code
+            ], $code);
         }
 
-        return ($this->json($data, Response::HTTP_OK));
+        return $this->json($shelves, $code);
     }
 
-    #[Route('/new', name: 'app_api_v1_shelf_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    /**
+     * @param ShelfService $shelfService
+     * @param ShelfDTO $shelfDTO
+     * @return JsonResponse
+     */
+    #[Route(
+        name: 'app_api_v1_shelf_create',
+        methods: ['POST'],
+        format: 'json'
+    )]
+    public function apiCreateShelfAction(
+        ShelfService $shelfService,
+        #[MapRequestPayload(acceptFormat: 'json')] ShelfDTO $shelfDTO,
+    ): JsonResponse
     {
-        $shelf = new Shelf();
-        $form = $this->createForm(ShelfType::class, $shelf);
-        $form->handleRequest($request);
+        $shelfId = $shelfService->saveShelf($shelfDTO);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($shelf);
-            $entityManager->flush();
+        [$data, $code] = $shelfId === null ?
+            [['success' => false], Response::HTTP_BAD_REQUEST] :
+            [['success' => true, 'id' => $shelfId], Response::HTTP_OK];
 
-            return $this->redirectToRoute('app_api_v1_shelf_index', [], Response::HTTP_SEE_OTHER);
-        }
+        return $this->json($data, $code);
+    }
 
-        return $this->render('api/v1/shelf/new.html.twig', [
-            'shelf' => $shelf,
-            'form' => $form,
+    /**
+     * @param ShelfService $shelfService
+     * @param ShelfDTO $shelfDTO
+     * @param int $id
+     * @return JsonResponse
+     */
+    #[Route('/{id}/edit',
+        name: 'app_api_v1_shelf_update',
+        requirements: ['id' => '\d+'],
+        methods: ['PUT'],
+        format: 'json'
+    )]
+    public function apiUpdateShelfAction(
+        ShelfService $shelfService,
+        #[MapRequestPayload(acceptFormat: 'json')] ShelfDTO $shelfDTO,
+        int $id
+    ): JsonResponse
+    {
+        $shelf = $shelfService->updateShelf($shelfDTO, $id);
+
+        return $this->json([
+            'success' => $shelf,
+            'code' => $shelf ? Response::HTTP_OK : Response::HTTP_NOT_FOUND
         ]);
     }
 
-    #[Route('/{id}', name: 'app_api_v1_shelf_show', methods: ['GET'])]
-    public function show(Shelf $shelf): Response
+    /**
+     * @param ShelfService $shelfService
+     * @param int $id
+     * @return JsonResponse
+     */
+    #[Route('/{id}',
+        name: 'app_api_v1_shelf_show',
+        requirements: ['id' => '\d+'],
+        methods: ['GET'],
+        format: 'json'
+    )]
+    public function apiShowShelfAction(
+        ShelfService $shelfService,
+        int $id,
+    ): JsonResponse
     {
-        return $this->render('api/v1/shelf/show.html.twig', [
-            'shelf' => $shelf,
-        ]);
-    }
+        $shelf = $shelfService->showShelf($id);
+        $code = empty($shelf) ? Response::HTTP_NO_CONTENT : Response::HTTP_OK;
 
-    #[Route('/{id}/edit', name: 'app_api_v1_shelf_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Shelf $shelf, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(ShelfType::class, $shelf);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_api_v1_shelf_index', [], Response::HTTP_SEE_OTHER);
+        if (empty($shelf)) {
+            return new JsonResponse([
+                'message' => 'Shelf not found!',
+                'code' => Response::HTTP_NOT_FOUND
+            ], Response::HTTP_NOT_FOUND);
         }
 
-        return $this->render('api/v1/shelf/edit.html.twig', [
-            'shelf' => $shelf,
-            'form' => $form,
-        ]);
+        return $this->json($shelf, $code);
     }
 
-    #[Route('/{id}', name: 'app_api_v1_shelf_delete', methods: ['POST'])]
-    public function delete(Request $request, Shelf $shelf, EntityManagerInterface $entityManager): Response
+    /**
+     * @param ShelfService $shelfService
+     * @param int $id
+     * @return JsonResponse
+     */
+    #[Route('/{id}',
+        name: 'app_api_v1_shelf_delete',
+        requirements: ['id' => '\d+'],
+        methods: ['DELETE'],
+        format: 'json'
+    )]
+    public function apiDeleteShelfAction(
+        ShelfService $shelfService,
+        int $id
+    ): JsonResponse
     {
-        if ($this->isCsrfTokenValid('delete'.$shelf->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($shelf);
-            $entityManager->flush();
-        }
+        $shelf = $shelfService->deleteShelf($id);
 
-        return $this->redirectToRoute('app_api_v1_shelf_index', [], Response::HTTP_SEE_OTHER);
+        return $this->json([
+            'success' => $shelf,
+            'code' => $shelf ? Response::HTTP_OK : Response::HTTP_NOT_FOUND
+        ], Response::HTTP_NOT_FOUND);
     }
 }

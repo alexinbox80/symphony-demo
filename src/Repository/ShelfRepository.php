@@ -16,33 +16,20 @@ class ShelfRepository extends ServiceEntityRepository
         parent::__construct($registry, Shelf::class);
     }
 
-    public function findByShelf(): array
+    /**
+     * @param int $page
+     * @param int $perPage
+     * @return Shelf[]
+     */
+    public function getShelves(int $page, int $perPage): array
     {
-        return $this->findAll();
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb->select('s')
+            ->from($this->getClassName(), 's')
+            ->orderBy('s.id', 'DESC')
+            ->setFirstResult($perPage * $page)
+            ->setMaxResults($perPage);
+
+        return $qb->getQuery()->getResult();
     }
-
-    //    /**
-    //     * @return Shelf[] Returns an array of Shelf objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('s.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?Shelf
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
 }

@@ -16,42 +16,20 @@ class ProfileRepository extends ServiceEntityRepository
         parent::__construct($registry, Profile::class);
     }
 
-    //    /**
-    //     * @return Profile[] Returns an array of Profile objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('p.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     * @param int $page
+     * @param int $perPage
+     * @return Profile[]
+     */
+    public function getProfiles(int $page, int $perPage): array
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb->select('p')
+            ->from($this->getClassName(), 'p')
+            ->orderBy('p.id', 'DESC')
+            ->setFirstResult($perPage * $page)
+            ->setMaxResults($perPage);
 
-    //    public function findOneBySomeField($value): ?Profile
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
-
-//    public function findOneByIdJoinedToUser(int $userId): ?Profile
-//    {
-//        $entityManager = $this->getEntityManager();
-//
-//        $query = $entityManager->createQuery(
-//            'SELECT p, u
-//            FROM App\Entity\Profile p
-//            INNER JOIN p.user u
-//            WHERE p.id = :id'
-//        )->setParameter('id', $userId);
-//
-//        return $query->getOneOrNullResult();
-//    }
+        return $qb->getQuery()->getResult();
+    }
 }
