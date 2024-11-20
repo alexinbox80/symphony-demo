@@ -34,7 +34,7 @@ class ShelfService
         $shelfRepository = $this->entityManager->getRepository(Shelf::class);
 
         $shelves[] = [];
-        if ($shelves === null) {
+        if ($page === null) {
             $shelves = $shelfRepository->findBy([], ['id' =>'DESC']);
         } else {
             if ($page < 0)

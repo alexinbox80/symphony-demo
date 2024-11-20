@@ -121,7 +121,7 @@ class BookService
         /**
          * @var BookRepository $bookRepository
          */
-        $BookRepository = $this->entityManager->getRepository(Book::class);
+        $bookRepository = $this->entityManager->getRepository(Book::class);
 
         /**
          * @var Book $book

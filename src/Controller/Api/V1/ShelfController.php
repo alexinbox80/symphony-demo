@@ -11,7 +11,7 @@ use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/api/v1/profile')]
+#[Route('/api/v1/shelf')]
 class ShelfController extends AbstractController
 {
     /**
